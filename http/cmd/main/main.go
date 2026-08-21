@@ -10,6 +10,7 @@ import (
 	gormaccessors "github.com/criptycpizza7/habit-tracker/common/db/gorm_db/gorm_accessors"
 	"github.com/criptycpizza7/habit-tracker/http/internal"
 	"github.com/criptycpizza7/habit-tracker/http/internal/web"
+	webmiddlewares "github.com/criptycpizza7/habit-tracker/http/internal/web/middlewares"
 	httpin_integration "github.com/ggicci/httpin/integration"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -37,6 +38,7 @@ func main() {
 	middlewares := make([]func(http.Handler) http.Handler, 0)
 	middlewares = append(middlewares, middleware.Recoverer)
 	middlewares = append(middlewares, middleware.Logger)
+	middlewares = append(middlewares, webmiddlewares.CORSMiddleware())
 
 	log.Println("Starting server")
 

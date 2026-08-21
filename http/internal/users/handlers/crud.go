@@ -1,7 +1,6 @@
 package usershandlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -43,7 +42,6 @@ func (h *UserHandlers) Patch(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		log.Println(err)
-		fmt.Printf("%T\n", err)
 		helpers.WriteEmptyError(w, http.StatusInternalServerError)
 		return
 	}

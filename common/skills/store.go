@@ -10,6 +10,7 @@ type ISkillStore interface {
 	AddSkill(skill *skillsschema.AddSkillDto) (*skillsschema.SkillDto, error)
 	DeleteSkill(skill *skillsschema.DeleteSkillDto) error
 	AddTime(time *skillsschema.AddTimeDto) (*skillsschema.AddTimeReturnDto, error)
+	AddTimeBulk(time *skillsschema.AddTimeBulkDto) (*skillsschema.AddTimeBulkReturnDto, error)
 
 	ListStory(user_id users.UserId) (*skillsschema.ListStoryJoinDto, error)
 	DeleteStory(story *skillsschema.DeleteStoryDto) (*skillsschema.AddTimeReturnDto, error)

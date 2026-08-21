@@ -29,6 +29,10 @@ func (c *SkillController) AddTime(time *skillsschema.AddTimeDto) (*skillsschema.
 	return c.skillStore.AddTime(time)
 }
 
+func (c *SkillController) AddTimeBulk(time *skillsschema.AddTimeBulkDto) (*skillsschema.AddTimeBulkReturnDto, error) {
+	return c.skillStore.AddTimeBulk(time)
+}
+
 func (c *SkillController) ListStory(user_id users.UserId) (*skillsschema.StoryDto, error) {
 	story_join, err := c.skillStore.ListStory(user_id)
 	story := &skillsschema.StoryDto{Story: make([]*skillsschema.StoryItemDto, 0)}
@@ -37,9 +41,11 @@ func (c *SkillController) ListStory(user_id users.UserId) (*skillsschema.StoryDt
 	}
 	for _, item := range *story_join.Story {
 		story.Story = append(story.Story, &skillsschema.StoryItemDto{
+			Id:          item.ID,
 			SkillName:   item.Name,
 			Time:        item.Time,
 			TimePercent: float32(item.Time) * 100.0 / float32(item.MaxTime),
+			CreatedAt:   item.CreatedAt,
 		})
 	}
 	return story, nil

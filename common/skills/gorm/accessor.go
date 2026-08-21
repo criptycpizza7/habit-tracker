@@ -119,11 +119,65 @@ func (a *SkillAccessor) addStory(time *skillsschema.AddTimeDto) error {
 	return nil
 }
 
+func (a *SkillAccessor) AddTimeBulk(time *skillsschema.AddTimeBulkDto) (*skillsschema.AddTimeBulkReturnDto, error) {
+	var skill_return *skillsschema.AddTimeBulkReturnDto
+	err := a.db.Transaction(func(tx *gorm.DB) error {
+		err := a.addStoryBulk(time)
+		if err != nil {
+			return err
+		}
+		skill_return, err = a.addTimeBulk(time)
+		return err
+	})
+	return skill_return, err
+}
+
+func (a *SkillAccessor) addTimeBulk(time *skillsschema.AddTimeBulkDto) (*skillsschema.AddTimeBulkReturnDto, error) {
+	skill := &[]skillmodels.Skill{}
+	result := a.db.Model(skill).Where(
+		"id in (?) and user_id = ?",
+		time.Skills,
+		time.UserId,
+	).
+		Clauses(clause.Returning{}).
+		UpdateColumn("current_time", gorm.Expr("\"current_time\" + ?", time.Time))
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	skill_return := skillsschema.AddTimeBulkReturnDto{
+		Items: make([]*skillsschema.AddTimeBulkReturnItemDto, len(time.Skills)),
+	}
+	for i, skill_id := range time.Skills {
+		skill_return.Items[i] = &skillsschema.AddTimeBulkReturnItemDto{
+			SkillId:     skill_id,
+			CurrentTime: time.Time,
+		}
+	}
+	return &skill_return, nil
+}
+
+func (a *SkillAccessor) addStoryBulk(time *skillsschema.AddTimeBulkDto) error {
+	stories := make([]skillmodels.Story, len(time.Skills))
+	for i, skill_id := range time.Skills {
+		stories[i] = skillmodels.Story{
+			SkillId: *skill_id,
+			UserId:  time.UserId,
+			Time:    time.Time,
+		}
+	}
+	result := a.db.Create(&stories)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
 func (a *SkillAccessor) ListStory(user_id users.UserId) (*skillsschema.ListStoryJoinDto, error) {
 	story := &[]skillsschema.StoryJoinDto{}
 	result := a.db.Table("stories st").
-		Select("st.time as time, skills.name as name, skills.max_time as max_time").
-		Joins("JOIN skills on st.skill_id = skills.id AND skills.user_id = ?", user_id).
+		Select("st.id as id, st.time as time, skills.name as name, skills.max_time as max_time, st.created_at as created_at").
+		Joins("JOIN skills on st.skill_id = skills.id AND st.deleted_at IS NULL AND skills.user_id = ?", user_id).
+		Order("st.created_at DESC").
 		Scan(&story)
 	if result.Error != nil {
 		return nil, result.Error

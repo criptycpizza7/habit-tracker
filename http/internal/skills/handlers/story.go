@@ -1,7 +1,6 @@
 package skillshandlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -14,7 +13,6 @@ import (
 
 func (h *SkillsHandlers) ListStory(w http.ResponseWriter, r *http.Request) { // TODO: пагинация
 	user_id := r.Context().Value("user_id").(users.UserId)
-	fmt.Println(h.ctrl)
 	story, err := h.ctrl.ListStory(user_id)
 	if err != nil {
 		log.Println(err)

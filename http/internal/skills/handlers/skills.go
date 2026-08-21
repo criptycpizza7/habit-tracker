@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
+
 	"github.com/criptycpizza7/habit-tracker/common/db"
 	skillsschema "github.com/criptycpizza7/habit-tracker/common/skills/schema"
 	"github.com/criptycpizza7/habit-tracker/common/users"
@@ -74,6 +76,30 @@ func (h *SkillsHandlers) AddTime(w http.ResponseWriter, r *http.Request) {
 		Time:    skill_input.Time,
 	}
 	skill, err := h.ctrl.AddTime(skill_dto)
+	if err == db.ErrSkillNotFound {
+		helpers.WriteError(w, http.StatusNotFound, "skill not found")
+		return
+	}
+	if err != nil {
+		log.Println(err)
+		helpers.WriteEmptyError(w, http.StatusInternalServerError)
+		return
+	}
+	helpers.WriteResponse(w, http.StatusOK, skill)
+}
+
+func (h *SkillsHandlers) AddTimeBulk(w http.ResponseWriter, r *http.Request) {
+	user_id := r.Context().Value("user_id").(users.UserId)
+	skill_input := helpers.Read[skillshelpers.AddTimeBulk](r).Time
+	skill_dto := &skillsschema.AddTimeBulkDto{
+		UserId: user_id,
+		Time:   skill_input.Time,
+		Skills: make([]*uuid.UUID, len(skill_input.SkillIds)),
+	}
+
+	copy(skill_dto.Skills, skill_input.SkillIds)
+
+	skill, err := h.ctrl.AddTimeBulk(skill_dto)
 	if err == db.ErrSkillNotFound {
 		helpers.WriteError(w, http.StatusNotFound, "skill not found")
 		return

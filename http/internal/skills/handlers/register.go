@@ -11,6 +11,7 @@ import (
 const (
 	SKILLS_ROUTE     = "/skills"
 	TIME_ROUTE       = SKILLS_ROUTE + "/time"
+	TIME_BULK_ROUTE  = SKILLS_ROUTE + "/bulk" + "/time"
 	STORY_ROUTE      = "/story"
 	STORY_ITEM_ROUTE = "/story/{id}"
 )
@@ -30,6 +31,9 @@ func (h *SkillsHandlers) RegisterHandlers(router *router.Router) {
 			r.With(
 				httpin.NewInput(skillshelpers.AddTime{}),
 			).Post(TIME_ROUTE, h.AddTime)
+			r.With(
+				httpin.NewInput(skillshelpers.AddTimeBulk{}),
+			).Post(TIME_BULK_ROUTE, h.AddTimeBulk)
 		},
 	)
 

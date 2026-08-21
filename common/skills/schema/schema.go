@@ -1,6 +1,8 @@
 package skillsschema
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 
 	"github.com/criptycpizza7/habit-tracker/common/users"
@@ -31,9 +33,11 @@ type SkillsDto struct {
 }
 
 type StoryItemDto struct {
-	SkillName   string  `json:"skill_name"`
-	Time        int     `json:"time"`
-	TimePercent float32 `json:"time_percent"`
+	Id          uuid.UUID `json:"id"`
+	SkillName   string    `json:"skill_name"`
+	Time        int       `json:"time"`
+	TimePercent float32   `json:"time_percent"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 type StoryDto struct {
@@ -44,6 +48,12 @@ type AddTimeDto struct {
 	UserID  users.UserId `json:"user_id"`
 	SkillId uuid.UUID    `json:"skill_id"`
 	Time    int          `json:"time"`
+}
+
+type AddTimeBulkDto struct {
+	UserId users.UserId `json:"user_id"`
+	Time   int          `json:"time"`
+	Skills []*uuid.UUID `json:"skills"`
 }
 
 type DeleteStoryDto struct {
@@ -62,10 +72,20 @@ type AddTimeReturnDto struct {
 	SkillId     uuid.UUID `json:"skill_id"`
 }
 
+type AddTimeBulkReturnItemDto struct {
+	CurrentTime int        `json:"current_time"`
+	SkillId     *uuid.UUID `json:"skill_id"`
+}
+type AddTimeBulkReturnDto struct {
+	Items []*AddTimeBulkReturnItemDto `json:"items"`
+}
+
 type StoryJoinDto struct {
-	Time    int
-	Name    string
-	MaxTime int
+	ID        uuid.UUID
+	Time      int
+	Name      string
+	MaxTime   int
+	CreatedAt time.Time
 }
 
 type ListStoryJoinDto struct {

@@ -28,6 +28,15 @@ type AddTime struct {
 	Time *addTimeInput `in:"body"`
 }
 
+type addTimeBulkInput struct {
+	SkillIds []*uuid.UUID `json:"skill_ids"`
+	Time     int          `json:"time"`
+}
+
+type AddTimeBulk struct {
+	Time *addTimeBulkInput `in:"body"`
+}
+
 type DeleteStory struct {
 	StoryId uuid.UUID `in:"path=id"`
 }
