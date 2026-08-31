@@ -1,0 +1,7 @@
+.git
+.vscode
+local
+deploy
+docker-compose.yaml
+Dockerfile
+.dockerignore

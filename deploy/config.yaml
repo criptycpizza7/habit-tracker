@@ -1,9 +1,9 @@
 http:
   host: 0.0.0.0
-  port: 8000
+  port: 9090
 
 db:
-  host: 0.0.0.0
+  host: postgres
   port: 5432
   user: db_user
   password: db_password

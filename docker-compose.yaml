@@ -1,0 +1,30 @@
+name: habit-tracker
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: db_password
+      POSTGRES_DB: habit_tracker
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U db_user -d habit_tracker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  http:
+    build:
+      context: .
+    ports:
+      - "9090:9090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./deploy/config.yaml:/app/local/config.yaml:ro
+
+volumes:
+  pgdata:
